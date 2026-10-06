@@ -1,0 +1,3 @@
+Immichinko — Copyright 2026 Immichinko contributors.
+Original application code is licensed under Apache-2.0.
+Dependency licenses remain their own: @immich/ui (MIT), Svelte (MIT), SvelteKit (MIT), Tailwind CSS (MIT), Vite (MIT), and Node.js (MIT and bundled third-party licenses). See installed package LICENSE files and pnpm-lock.yaml for the exact dependency graph. No Immich server/web source is bundled.
