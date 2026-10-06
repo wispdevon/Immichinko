@@ -1,0 +1,7 @@
+FROM node:22-bookworm-slim
+WORKDIR /app
+COPY --chown=node:node integrations/server/gateway.mjs ./integrations/server/gateway.mjs
+COPY --chown=node:node static/integrations/immichinko.user.js ./static/integrations/immichinko.user.js
+USER node
+ENV PORT=8080
+CMD ["node", "integrations/server/gateway.mjs"]

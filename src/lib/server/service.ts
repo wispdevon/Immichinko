@@ -211,7 +211,7 @@ export class Service {
               .filter(Boolean)
               .join(', '),
             reason: pick!.reason,
-            url: `${this.immich.url.replace(/\/$/, '')}/photos/${photo.id}`,
+            url: `${this.immich.publicUrl.replace(/\/$/, '')}/photos/${photo.id}`,
           }
         : null,
     };

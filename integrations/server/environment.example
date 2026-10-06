@@ -1,0 +1,10 @@
+IMMICH_UPSTREAM_URL=http://immich-server:2283
+IMMICH_PUBLIC_URL=https://photos.example.com
+IMMICH_API_KEY=
+IMMICH_OWNER_ID=
+ORIGIN=https://photos.example.com
+TZ=Asia/Bangkok
+IMMICH_NETWORK=immich_default
+INTEGRATION_PORT=3101
+# Use a private LAN interface when the reverse proxy runs on another host.
+INTEGRATION_BIND=127.0.0.1

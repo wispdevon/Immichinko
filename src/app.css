@@ -303,3 +303,24 @@ nav a[aria-current='page'] {
   color: var(--immich-ui-primary-500);
   font-weight: 600;
 }
+
+.embedded .brand,
+.embedded footer {
+  display: none;
+}
+.embedded header {
+  padding: 8px 24px;
+  justify-content: center;
+}
+.embedded main {
+  min-height: 0;
+  padding-top: 24px;
+}
+@media (max-width: 600px) {
+  .embedded header {
+    padding: 4px 16px;
+  }
+  .embedded main {
+    padding-top: 16px;
+  }
+}

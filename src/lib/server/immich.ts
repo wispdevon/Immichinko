@@ -27,6 +27,7 @@ export class Immich {
   constructor(
     public url: string,
     private key: string,
+    public publicUrl: string = url,
   ) {
     if (
       url &&

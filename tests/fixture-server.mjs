@@ -47,6 +47,33 @@ createServer(async (req, res) => {
     res.end(JSON.stringify({ writes, assets: [...assets.values()] }));
     return;
   }
+  if (req.url === '/api/users/me') {
+    if (req.headers.cookie === 'immich_access_token=fixture-session') {
+      res.end(JSON.stringify({ id: 'fixture-owner' }));
+    } else {
+      res.statusCode = 401;
+      res.end('{}');
+    }
+    return;
+  }
+  if (
+    ['/photos', '/sharing', '/explore', '/login'].includes(
+      req.url?.split('?')[0],
+    )
+  ) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    const loggedIn =
+      req.headers.cookie === 'immich_access_token=fixture-session';
+    res.end(`<!doctype html><html class="dark"><head><title>Immich fixture</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+    *{box-sizing:border-box}body{margin:0;font:16px system-ui;background:#000;color:#ddd}header{height:80px;padding:20px 28px;border-bottom:1px solid #333;display:flex;gap:16px;align-items:center}header strong{font-size:30px;color:#accbfa}.shell{display:grid;grid-template-columns:256px auto;height:calc(100dvh - 80px);overflow:hidden}#sidebar{position:relative;overflow:auto;z-index:20;background:#000;padding:28px 20px 20px 0}#sidebar a{display:flex;align-items:center;padding:14px 20px;text-decoration:none;color:inherit;gap:16px;border-radius:0 24px 24px 0;min-height:48px}#sidebar a>div{display:flex;align-items:center;gap:16px}#sidebar svg{width:24px;height:24px;fill:currentColor}#sidebar a[aria-current=page]{background:#253044;color:#accbfa}main{position:relative;min-width:0}.original{padding:36px}#top-menu-button{display:none}button{font:inherit;color:inherit;border:0}#immichinko-panel{background:#171717}
+    @media(max-width:700px){.shell{grid-template-columns:0px auto}#sidebar{width:256px;box-shadow:8px 0 20px #0008;position:relative;transition:transform .1s}#sidebar[inert]{transform:translateX(-100%)}#top-menu-button{display:block;background:transparent}}
+    </style></head><body><header><button id="top-menu-button" aria-label="Main menu">☰</button><strong>immich</strong></header>${loggedIn ? `<div class="shell"><nav id="sidebar"><div>${['Photos', 'Explore', 'Map', 'People', 'Sharing', 'Favorites'].map((name) => `<div><div class="relative flex items-center"><a href="/${name.toLowerCase()}" class="nav-row" ${name === 'Photos' ? 'aria-current="page"' : ''}><div><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/></svg><span>${name}</span></div></a></div></div>`).join('')}</div></nav><main><div class="original" id="original-content"><h1>Photos</h1><p>Your Immich timeline stays here.</p></div></main></div>` : '<main><h1>Sign in to Immich</h1></main>'}<script>
+    document.getElementById('top-menu-button').addEventListener('click',()=>{const s=document.getElementById('sidebar');if(s)s.inert=!s.inert;});
+    if(innerWidth<700){const s=document.getElementById('sidebar');if(s)s.inert=true;}
+    document.addEventListener('click',e=>{const a=e.target.closest('#sidebar a');if(!a||a.closest('#immichinko-sidebar-row'))return;e.preventDefault();history.pushState({},'',a.getAttribute('href'));document.querySelector('h1').textContent=a.textContent;});
+    </script></body></html>`);
+    return;
+  }
   if (req.headers['x-api-key'] !== 'fixture-secret') {
     res.statusCode = 403;
     res.end('{}');

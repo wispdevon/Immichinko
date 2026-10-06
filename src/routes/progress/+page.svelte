@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from '$app/paths';
   import { onMount } from 'svelte';
   import { Button } from '@immich/ui';
   type Progress = {
@@ -17,7 +18,7 @@
   async function load() {
     error = '';
     try {
-      const r = await fetch('/api/progress');
+      const r = await fetch(`${base}/api/progress`);
       const d = await r.json();
       if (!r.ok) throw new Error(d.error);
       progress = d;

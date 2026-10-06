@@ -4,16 +4,16 @@ Validated on 2026-10-07 with Node 22, pnpm 10.18.3, the production SvelteKit Nod
 
 ## Automated checks
 
-| Check                                | Result                                             |
-| ------------------------------------ | -------------------------------------------------- |
-| Prettier formatting                  | Pass                                               |
-| Svelte/TypeScript checks             | Pass, zero errors and warnings                     |
-| Focused unit and transport tests     | Pass, 24 tests                                     |
-| Production build                     | Pass                                               |
-| Browser workflow                     | Pass, production build plus HTTP Immich fixture    |
-| Docker Compose configuration         | Pass with placeholder fixture values               |
-| Live Immich server                   | Unverified; credentials not configured             |
-| Docker image build and container run | Unverified; Docker daemon socket permission denied |
+| Check                                | Result                                                      |
+| ------------------------------------ | ----------------------------------------------------------- |
+| Prettier formatting                  | Pass                                                        |
+| Svelte/TypeScript checks             | Pass, zero errors and warnings                              |
+| Focused unit and transport tests     | Pass, 31 tests                                              |
+| Production build                     | Pass                                                        |
+| Browser workflow                     | Pass, production build plus HTTP Immich fixture             |
+| Docker Compose configuration         | Pass with placeholder fixture values                        |
+| Live Immich server                   | Read-only connection, search and previews verified on 3.2.0 |
+| Docker image build and container run | Integrated images built and running healthy on ARM64        |
 
 Node 22 emits its expected experimental SQLite warning. Vite treats `node:sqlite` as an external built-in for the server bundle; the production Node server exercised it successfully in browser tests. These are server build/runtime notices, not browser app errors.
 
@@ -57,4 +57,13 @@ Committed screenshots use NASA's Earthrise image AS08-14-2383. Production never 
 
 ## Remaining verification
 
-Read-only random search and preview access succeeded against a configured Immich 3.2.0 instance. This exposed a runtime compatibility restriction absent from the schema-only check: deprecated `withDeleted` cannot be combined with `filter`. Removed that option and strengthened the fixture and transport regression checks. Trash remains excluded through the new `trashedAt` filter. Exercise Favorite and Undo against the live instance through the review UI; validation did not change any live photo. Build and run Docker on a host with daemon access, including volume ownership and restart persistence. Other browsers and large live libraries have not been tested. Run a single app instance per SQLite database. Immich's verified favorite endpoint has no conditional-update argument, so external changes between the last read and write remain a race; recovery treats an already-matching target favorite boolean as success.
+Read-only random search and preview access succeeded against a configured Immich 3.2.0 instance. This exposed a runtime compatibility restriction absent from the schema-only check: deprecated `withDeleted` cannot be combined with `filter`. Removed that option and strengthened the fixture and transport regression checks. Trash remains excluded through the new `trashedAt` filter. Exercise Favorite and Undo against the live instance through the review UI; validation did not change any live photo. The integrated Docker images run on ARM64; the existing SQLite history was migrated into a Node-owned persistent volume and survives gateway recreation. Other browsers and large live libraries have not been tested. Run a single app instance per SQLite database. Immich's verified favorite endpoint has no conditional-update argument, so external changes between the last read and write remain a race; recovery treats an already-matching target favorite boolean as success.
+
+## Embedded sidebar verification
+
+The gateway suite covers HTML injection, anonymous and other-account rejection, owner authorization, unchanged request methods/paths, binary proxying and raw WebSocket upgrade/traffic and rejection of network-path proxy targets. The integration browser test covers the entry immediately below Sharing, an embedded Favorite and Progress count, theme synchronization, original content restoration, back/forward, mobile sidebar dismissal, refresh/resume and logout cleanup. Both production builds pass.
+
+- [Integrated desktop](screenshots/integrated-desktop.png)
+- [Integrated mobile](screenshots/integrated-mobile.png)
+
+The deployed ARM64 gateway passes owner-authenticated connection and batch reads; unauthenticated companion access returns 401. Its sidebar injection is verified through the Pi's Caddy and LAN gateway. The public workstation Caddy change is prepared and awaits local administrator access. Real browser-session rendering and live Favorite/Undo remain unverified; browser interaction evidence uses fixtures and no live assets were modified during validation.

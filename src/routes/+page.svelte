@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { base } from '$app/paths';
   import { Button } from '@immich/ui';
   import { onMount } from 'svelte';
   type Session = {
@@ -37,7 +38,7 @@
     loading = true;
     error = '';
     try {
-      const r = await fetch('/api/today');
+      const r = await fetch(`${base}/api/today`);
       const data = await r.json();
       if (!r.ok) throw new Error(data.error);
       if (session?.photo?.id !== data.photo?.id) {
@@ -70,7 +71,7 @@
       };
     try {
       const r = await fetch(
-        action === 'undo' ? '/api/undo' : '/api/decisions',
+        action === 'undo' ? `${base}/api/undo` : `${base}/api/decisions`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -114,8 +115,20 @@
     const refresh = () => {
       if (!busy) void load();
     };
-    window.addEventListener('focus', refresh);
-    return () => window.removeEventListener('focus', refresh);
+    // Focusing an iframe happens on its first click; refreshing then can
+    // disable the very control being clicked. Tab visibility still refreshes it.
+    const focus = () => {
+      if (window.parent === window) refresh();
+    };
+    window.addEventListener('focus', focus);
+    const visibility = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    document.addEventListener('visibilitychange', visibility);
+    return () => {
+      window.removeEventListener('focus', focus);
+      document.removeEventListener('visibilitychange', visibility);
+    };
   });
 </script>
 
@@ -157,7 +170,7 @@
     {/if}
     {#key `${session.photo.id}-${imageVersion}`}
       <img
-        src={`/api/preview/${session.photo.id}`}
+        src={`${base}/api/preview/${session.photo.id}`}
         alt={`Photograph captured ${new Date(session.photo.date).toLocaleDateString()}`}
         onload={() => {
           imageLoaded = true;
@@ -239,7 +252,7 @@
       Set your Immich connection on the server to begin rediscovering your
       photos.
     </p>
-    <a href="/settings">Connection settings →</a>
+    <a href={`${base}/settings`}>Connection settings →</a>
   </div>{/if}
 {#if error}<p class="error" role="alert">{error}</p>
   <div class="actions">

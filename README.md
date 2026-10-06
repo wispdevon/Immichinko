@@ -25,6 +25,10 @@ The `rediscovery` Docker volume holds SQLite metadata and its durable write jour
 
 To back up, stop the app, copy the volume contents (including SQLite WAL files if present), then start it again. Keep the key separate from backups of the database. `docker compose down` preserves the volume; adding `--volumes` removes your rediscovery history.
 
+## Inside the Immich sidebar
+
+The optional [server integration](integrations/server/README.md) adds **Immichinko** below **Sharing**, opening review inside Immich's main area. It reuses your Immich session, requires the configured library owner, and keeps the dedicated API key on the companion server. Desktop and mobile views support normal navigation and theme changes. It is deployed as a separate gateway and companion, without rebuilding or modifying Immich itself.
+
 ## Development
 
 Use **Node 22.13 or later in the Node 22 series** and **pnpm 10.18.3**:
@@ -71,6 +75,6 @@ pnpm test:browser
 
 Browser tests start a local HTTP Immich fixture and the production build on ports 4311 and 4310. They do not use real credentials. Screenshots are written to `docs/screenshots`; tests use a deterministic SVG by default. To capture photographic examples, set `FIXTURE_PHOTO` to a local JPEG while running `pnpm test:browser`. Fixtures use fictional dates/locations. The committed photographic screenshots use NASA's Apollo 8 Earthrise image, AS08-14-2383; they are UI evidence, not live library integration. [NASA image source](https://images.nasa.gov/details/as08-14-2383).
 
-See [validation results](docs/VALIDATION.md) and [design rationale](DESIGN.md). Read-only search and previews have been verified against a configured **Immich 3.2.0** server. Live Favorite writes and Undo remain unverified until exercised by the user. The v3.2 filter format excludes the deprecated `withDeleted` field; trash is filtered with `trashedAt: { eq: null }`. Docker Compose configuration was validated; container build/run was unavailable in this workspace because access to the Docker daemon socket was denied.
+See [validation results](docs/VALIDATION.md) and [design rationale](DESIGN.md). Read-only search and previews have been verified against a configured **Immich 3.2.0** server. Live Favorite writes and Undo remain unverified until exercised by the user. The v3.2 filter format excludes the deprecated `withDeleted` field; trash is filtered with `trashedAt: { eq: null }`. The integrated app and gateway images were built and run on the Raspberry Pi (ARM64), with healthy containers and persistent review history.
 
-Notifications, AI ranking, multiple profiles and native Immich UI injection are outside this version. Dependency licenses are listed in [NOTICE](NOTICE); original app source is covered by [LICENSE](LICENSE).
+Notifications, AI ranking and multiple profiles are outside this version. The optional sidebar integration is maintained separately from upstream Immich. Dependency licenses are listed in [NOTICE](NOTICE); original app source is covered by [LICENSE](LICENSE).

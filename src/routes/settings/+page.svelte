@@ -1,24 +1,20 @@
 <script lang="ts">
+  import { base } from '$app/paths';
   import { Button } from '@immich/ui';
   import { onMount } from 'svelte';
+  import { savedTheme, saveTheme } from '$lib/preferences';
   let theme = $state('system');
   let status = $state('');
   let busy = $state(false);
   let timezone = $state('Asia/Bangkok');
   function apply() {
-    localStorage.setItem('immichinko-theme', theme);
-    document.documentElement.classList.toggle(
-      'dark',
-      theme === 'dark' ||
-        (theme === 'system' &&
-          matchMedia('(prefers-color-scheme: dark)').matches),
-    );
+    saveTheme(theme);
   }
   async function check() {
     busy = true;
     status = 'Checking connection…';
     try {
-      const r = await fetch('/api/status');
+      const r = await fetch(`${base}/api/status`);
       const d = await r.json();
       status = r.ok ? 'Connected to Immich' : d.error;
       if (d.timezone) timezone = d.timezone;
@@ -29,10 +25,7 @@
     }
   }
   onMount(() => {
-    theme = localStorage.getItem('immichinko-theme') || 'system';
-    const media = matchMedia('(prefers-color-scheme: dark)');
-    media.addEventListener('change', apply);
-    return () => media.removeEventListener('change', apply);
+    theme = savedTheme();
   });
 </script>
 

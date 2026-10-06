@@ -1,0 +1,68 @@
+services:
+  immichinko:
+    build:
+      context: .
+      dockerfile: integrations/server/Dockerfile.app
+    restart: unless-stopped
+    init: true
+    environment:
+      IMMICH_URL: ${IMMICH_UPSTREAM_URL:?Set the internal Immich URL}
+      IMMICH_PUBLIC_URL: ${ORIGIN:?Set the public Immich origin}
+      IMMICH_API_KEY: ${IMMICH_API_KEY:?Set the dedicated key}
+      ORIGIN: ${ORIGIN}
+      TZ: ${TZ:-Asia/Bangkok}
+    volumes:
+      - rediscovery:/data
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/immichinko').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      start_period: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - review
+      - immich
+  gateway:
+    build:
+      context: .
+      dockerfile: integrations/server/Dockerfile.gateway
+    restart: unless-stopped
+    init: true
+    ports:
+      - '${INTEGRATION_BIND:-127.0.0.1}:${INTEGRATION_PORT:-3101}:8080'
+    environment:
+      IMMICH_UPSTREAM_URL: ${IMMICH_UPSTREAM_URL}
+      IMMICHINKO_UPSTREAM_URL: http://immichinko:3000
+      IMMICH_OWNER_ID: ${IMMICH_OWNER_ID:?Set the library owner user ID}
+      ORIGIN: ${ORIGIN}
+    depends_on:
+      immichinko:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:8080/api/server/version').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      start_period: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - review
+      - immich
+networks:
+  review:
+  immich:
+    external: true
+    name: ${IMMICH_NETWORK:-immich_default}
+volumes:
+  rediscovery:

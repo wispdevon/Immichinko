@@ -6,7 +6,11 @@ let instance: Service;
 export function service() {
   return (instance ??= new Service(
     new Store(env.DATABASE_PATH || 'data/immichinko.sqlite'),
-    new Immich(env.IMMICH_URL || '', env.IMMICH_API_KEY || ''),
+    new Immich(
+      env.IMMICH_URL || '',
+      env.IMMICH_API_KEY || '',
+      env.IMMICH_PUBLIC_URL || env.IMMICH_URL || '',
+    ),
     env.TZ || 'Asia/Bangkok',
   ));
 }

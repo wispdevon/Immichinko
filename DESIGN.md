@@ -14,4 +14,8 @@ These are observations about the sampled code, not claims of authorship or prior
 
 Six older photos, three recent photos, one deferred photo; fill shortages from eligible samples. Pass cools down 90 days and Later seven days. A decision advances only after persistence and, for Favorite, a confirmed Immich save. Undo checks external favorite state. Counts derive from successful non-undone decisions; empty sessions do not earn streak days. SQLite preserves unfinished sessions across restarts and calendar days. Dates use TZ (Asia/Bangkok by default).
 
-The server owns credentials and proxies previews. Deploy behind a private network or authentication proxy. No notifications, AI ranking, profiles or injected Immich UI in this version.
+The server owns credentials and proxies previews. Deploy behind a private network or authentication proxy. No notifications, AI ranking or multiple profiles in this version.
+
+## Sidebar integration
+
+The subsequent user request extends the app into Immich: an entry directly after Sharing opens review within the existing main area. Retain the Immich header/sidebar and suppress the companion brand/footer while embedded. Today, Progress and Settings remain available inside the view. Follow the parent theme when set to System, restore the original view on navigation, and close the mobile sidebar after opening. The server gateway preserves original Immich routes and uses the existing owner session to authorize the companion.

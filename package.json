@@ -14,7 +14,9 @@
     "test": "vitest run",
     "test:browser": "node -e \"for(const s of ['','-wal','-shm']) require('node:fs').rmSync('/tmp/immichinko-e2e.sqlite'+s,{force:true})\" && playwright test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "build:integrated": "IMMICHINKO_BASE_PATH=/immichinko IMMICHINKO_BUILD_DIR=build-integrated vite build",
+    "test:integration": "node -e \"for(const s of ['','-wal','-shm']) require('node:fs').rmSync('/tmp/immichinko-integration.sqlite'+s,{force:true})\" && playwright test --config playwright.integration.config.ts"
   },
   "dependencies": {
     "@immich/ui": "0.86.0",
