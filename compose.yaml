@@ -1,0 +1,28 @@
+services:
+  immichinko:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '${BIND_ADDRESS:-127.0.0.1}:${PORT:-3000}:3000'
+    environment:
+      IMMICH_URL: ${IMMICH_URL:?Set IMMICH_URL in .env}
+      IMMICH_API_KEY: ${IMMICH_API_KEY:?Set IMMICH_API_KEY in .env}
+      TZ: ${TZ:-Asia/Bangkok}
+      ORIGIN: ${ORIGIN:-http://localhost:3000}
+      DATABASE_PATH: /data/immichinko.sqlite
+    volumes:
+      - rediscovery:/data
+    init: true
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  rediscovery:

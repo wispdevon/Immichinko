@@ -1,8 +1,70 @@
 <script lang="ts">
- import { Button } from '@immich/ui';import { onMount } from 'svelte';
- let theme=$state('system');let status=$state('');let busy=$state(false);let timezone=$state('Asia/Bangkok');
- function apply(){localStorage.setItem('immichinko-theme',theme);document.documentElement.classList.toggle('dark',theme==='dark'||(theme==='system'&&matchMedia('(prefers-color-scheme: dark)').matches));}
- async function check(){busy=true;status='Checking connection…';try{const r=await fetch('/api/status');const d=await r.json();status=r.ok?'Connected to Immich':d.error;if(d.timezone)timezone=d.timezone;}catch{status='Could not reach the server.';}finally{busy=false;}}
- onMount(()=>{theme=localStorage.getItem('immichinko-theme')||'system';const media=matchMedia('(prefers-color-scheme: dark)');media.addEventListener('change',apply);return()=>media.removeEventListener('change',apply);});
+  import { Button } from '@immich/ui';
+  import { onMount } from 'svelte';
+  let theme = $state('system');
+  let status = $state('');
+  let busy = $state(false);
+  let timezone = $state('Asia/Bangkok');
+  function apply() {
+    localStorage.setItem('immichinko-theme', theme);
+    document.documentElement.classList.toggle(
+      'dark',
+      theme === 'dark' ||
+        (theme === 'system' &&
+          matchMedia('(prefers-color-scheme: dark)').matches),
+    );
+  }
+  async function check() {
+    busy = true;
+    status = 'Checking connection…';
+    try {
+      const r = await fetch('/api/status');
+      const d = await r.json();
+      status = r.ok ? 'Connected to Immich' : d.error;
+      if (d.timezone) timezone = d.timezone;
+    } catch {
+      status = 'Could not reach the server.';
+    } finally {
+      busy = false;
+    }
+  }
+  onMount(() => {
+    theme = localStorage.getItem('immichinko-theme') || 'system';
+    const media = matchMedia('(prefers-color-scheme: dark)');
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  });
 </script>
-<h1>Settings</h1><p class="muted">Your library, your pace.</p><section class="panel"><h2>Appearance</h2><label>Theme<select bind:value={theme} onchange={apply}><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label><h2 class="mt-10">Immich connection</h2><p class="muted">Configure <code>IMMICH_URL</code> and a dedicated <code>IMMICH_API_KEY</code> in the server environment, then restart the app. The key needs <code>asset.read</code>, <code>asset.view</code> and <code>asset.update</code>. Credentials stay on the server.</p><Button variant="outline" loading={busy} onclick={check}>Check connection</Button><p class="muted" role="status">{status}</p><h2 class="mt-10">Daily rhythm</h2><p class="muted">Timezone: {timezone}. Set <code>TZ</code> on the server to change it. An unfinished batch waits for you, even after midnight.</p><p class="muted">Pass brings a photo back after 90 days. Later brings it back after seven. Only Favorite changes your Immich library.</p></section>
+
+<h1>Settings</h1>
+<p class="muted">Your library, your pace.</p>
+<section class="panel">
+  <h2>Appearance</h2>
+  <label
+    >Theme<select bind:value={theme} onchange={apply}
+      ><option value="system">System</option><option value="light">Light</option
+      ><option value="dark">Dark</option></select
+    ></label
+  >
+  <h2 class="mt-10">Immich connection</h2>
+  <p class="muted">
+    Configure <code>IMMICH_URL</code> and a dedicated
+    <code>IMMICH_API_KEY</code>
+    in the server environment, then restart the app. The key needs
+    <code>asset.read</code>, <code>asset.view</code> and
+    <code>asset.update</code>. Credentials stay on the server.
+  </p>
+  <Button variant="outline" loading={busy} onclick={check}
+    >Check connection</Button
+  >
+  <p class="muted" role="status">{status}</p>
+  <h2 class="mt-10">Daily rhythm</h2>
+  <p class="muted">
+    Timezone: {timezone}. Set <code>TZ</code> on the server to change it. An unfinished
+    batch waits for you, even after midnight.
+  </p>
+  <p class="muted">
+    Pass brings a photo back after 90 days. Later brings it back after seven.
+    Only Favorite changes your Immich library.
+  </p>
+</section>

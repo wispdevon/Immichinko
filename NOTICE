@@ -1,3 +1,8 @@
 Immichinko — Copyright 2026 Immichinko contributors.
 Original application code is licensed under Apache-2.0.
 Dependency licenses remain their own: @immich/ui (MIT), Svelte (MIT), SvelteKit (MIT), Tailwind CSS (MIT), Vite (MIT), and Node.js (MIT and bundled third-party licenses). See installed package LICENSE files and pnpm-lock.yaml for the exact dependency graph. No Immich server/web source is bundled.
+
+Documentation screenshots show NASA Apollo 8 Earthrise, image AS08-14-2383.
+NASA image source: https://images.nasa.gov/details/as08-14-2383
+Image credit: NASA. No NASA endorsement is implied. Screenshot metadata is fictional fixture data.
+Additional development dependencies (MIT): TypeScript, Vitest, Playwright, Prettier and prettier-plugin-svelte. Transitive dependencies retain their package licenses.
