@@ -221,7 +221,8 @@
         : 'No photographs to review.'}
     </h2>
     <p class="muted">
-      {session.reviewed} reviewed · {session.favorites} favorites added
+      {session.reviewed} reviewed · {session.favorites}
+      {session.favorites === 1 ? 'favorite' : 'favorites'} added
     </p>
     <p class="muted">Next batch: {session.nextDate}</p>
     {#if session.skipped}<p class="muted">

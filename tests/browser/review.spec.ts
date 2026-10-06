@@ -131,7 +131,7 @@ test('review, denial, retry, undo, keyboard, resume, completion, themes and mobi
   await expect(
     page.getByRole('heading', { name: 'A little closer to your favorites.' }),
   ).toBeVisible();
-  await expect(page.getByText('10 reviewed · 1 favorites added')).toBeVisible();
+  await expect(page.getByText('10 reviewed · 1 favorite added')).toBeVisible();
   await page.screenshot({
     path: 'docs/screenshots/completed-mobile.png',
     fullPage: true,
