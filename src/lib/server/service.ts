@@ -15,14 +15,14 @@ export class Service {
  }
  async reconcile() {
   const j=this.store.state.journal; if(!j) return;
-  const a=await this.immich.get(j.asset);
+  let a:Asset;try {a=await this.immich.get(j.asset);}catch(e){if(e instanceof UpstreamError && [400,401,403,404].includes(e.status)){delete this.store.state.journal;this.store.save();}throw e;}
   if(a.isFavorite===j.target) this.finalize(j,a);
-  else if(a.isFavorite===j.previous && a.type==='IMAGE' && a.visibility==='timeline' && !a.isTrashed && !a.isOffline && !a.isArchived) { const updated=await this.immich.favorite(j.asset,j.target); if(updated.isFavorite!==j.target) throw new Error('Immich did not confirm the favorite state. Retry.'); this.finalize(j,updated); }
+  else if(a.isFavorite===j.previous && (!j.beforeUpdatedAt || a.updatedAt===j.beforeUpdatedAt) && a.type==='IMAGE' && a.visibility==='timeline' && !a.isTrashed && !a.isOffline && !a.isArchived) { let updated:Asset;try{updated=await this.immich.favorite(j.asset,j.target);}catch(e){if(e instanceof UpstreamError&&[400,401,403,404].includes(e.status)){delete this.store.state.journal;this.store.save();}throw e;} if(updated.isFavorite!==j.target) throw new Error('Immich did not confirm the favorite state. Retry.'); this.finalize(j,updated); }
   else throw new Error('Pending save conflicts with an external change. Resolve the photo in Immich before retrying.');
  }
  async today() {
   await this.reconcile(); const s=this.store.state; const date=day(this.now(),this.tz);
-  let b=s.batches.find(b=>!b.completed && b.picks.some(p=>!b.skipped.includes(p.id)&&!b.decisions.some(d=>d.id===p.id&&!d.undone))) ?? s.batches.find(b=>b.date===date);
+  let b=s.batches.find(b=>!b.completed && b.picks.some(p=>!b.skipped.includes(p.id)&&!b.decisions.some(d=>d.id===p.id&&!d.undone))) ?? s.batches.find(b=>b.completed===date) ?? s.batches.find(b=>b.date===date);
   if(!b) {
    const boundary=yearBoundary(this.now()); const old:Asset[]=[]; const recent:Asset[]=[];
    for(let n=0;n<3;n++) { old.push(...await this.immich.random(boundary,true)); recent.push(...await this.immich.random(boundary,false)); }
@@ -48,7 +48,7 @@ export class Service {
   const a=await this.immich.get(id);
   if(undo) { if(a.isFavorite!==(last!.action==='favorite'?true:last!.previous) || (last!.action==='favorite'&&a.updatedAt!==last!.updatedAt)) throw new Error('Photo changed in Immich; Undo was not applied.'); }
   else if(!eligible(a)) throw new Error('Photo is no longer eligible. Reload Today.');
-  const j:Journal={requestId,batch,asset:id,action:undo?last!.action:action as Decision['action'],undo,target:undo?last!.previous:true,previous:a.isFavorite,priorCooldown:undo?last!.priorCooldown:this.store.state.cooldowns[id],at:this.now().toISOString()};
+  const j:Journal={requestId,batch,asset:id,action:undo?last!.action:action as Decision['action'],undo,target:undo?last!.previous:true,previous:a.isFavorite,beforeUpdatedAt:a.updatedAt,priorCooldown:undo?last!.priorCooldown:this.store.state.cooldowns[id],at:this.now().toISOString()};
   if(j.action==='favorite') {this.store.state.journal=j;this.store.save(); await this.reconcile();}
   else this.finalize(j,a);
  }

@@ -5,7 +5,7 @@ import type { Pick } from './selection';
 export type Decision = { id: string; action: 'favorite'|'pass'|'later'; at: string; previous: boolean; updatedAt?: string; undone?: boolean; priorCooldown?: Cooldown };
 export type Cooldown = { until: string; action: string };
 export type Batch = { date: string; picks: Pick[]; decisions: Decision[]; skipped: string[]; completed?: string };
-export type Journal = { requestId: string; batch: string; asset: string; action: Decision['action']; undo?: boolean; target: boolean; previous: boolean; priorCooldown?: Cooldown; at: string };
+export type Journal = { requestId: string; batch: string; asset: string; action: Decision['action']; undo?: boolean; target: boolean; previous: boolean; beforeUpdatedAt?: string; priorCooldown?: Cooldown; at: string };
 export type State = { batches: Batch[]; cooldowns: Record<string,Cooldown>; journal?: Journal; requests: Record<string,string> };
 export class Store {
  db: DatabaseSync; state: State;
