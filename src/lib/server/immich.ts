@@ -9,6 +9,6 @@ export class Immich {
  }
  async get(id: string): Promise<Asset> { return (await this.request(`/assets/${encodeURIComponent(id)}`)).json(); }
  async favorite(id: string, value: boolean): Promise<Asset> { return (await this.request(`/assets/${encodeURIComponent(id)}`, 'PUT', { isFavorite: value })).json(); }
- async random(boundary: string, older: boolean): Promise<Asset[]> { return (await this.request('/search/random', 'POST', { size: 100, type: 'IMAGE', isFavorite: false, isTrashed: false, isOffline: false, visibility: 'timeline', [older ? 'takenBefore' : 'takenAfter']: boundary })).json(); }
+ async random(boundary: string, older: boolean): Promise<Asset[]> { return (await this.request('/search/random', 'POST', { size: 100, withDeleted: false, withStacked: false, withExif: true, filter: { type: { eq: 'IMAGE' }, isFavorite: { eq: false }, isOffline: { eq: false }, visibility: { eq: 'timeline' }, trashedAt: { eq: null }, takenAt: { [older ? 'lt' : 'gte']: boundary } } })).json(); }
 }
 export const eligible = (a: Asset) => a.type === 'IMAGE' && !a.isFavorite && !a.isTrashed && !a.isOffline && !a.isArchived && a.visibility === 'timeline' && (!a.stack || a.stack.primaryAssetId === a.id);
