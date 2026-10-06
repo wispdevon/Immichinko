@@ -80,7 +80,6 @@ export class Immich {
     return (
       await this.request('/search/random', 'POST', {
         size: 100,
-        withDeleted: false,
         withStacked: false,
         withExif: true,
         filter: {

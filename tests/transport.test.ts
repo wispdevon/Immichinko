@@ -19,7 +19,7 @@ it('uses verified v3.2 filters, bounded size, server credential header and PUT b
   expect(url).toBe('http://immich.local/api/search/random');
   const body = JSON.parse(options.body);
   expect(body.size).toBe(100);
-  expect(body.withDeleted).toBe(false);
+  expect(body.withDeleted).toBeUndefined();
   expect(body.withStacked).toBe(false);
   expect(body.filter.trashedAt).toEqual({ eq: null });
   expect(body.filter.takenAt).toEqual({

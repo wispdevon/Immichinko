@@ -56,6 +56,7 @@ createServer(async (req, res) => {
     const filter = parsed.filter;
     if (
       parsed.size !== 100 ||
+      parsed.withDeleted !== undefined ||
       !filter ||
       filter.visibility.eq !== 'timeline' ||
       filter.trashedAt.eq !== null ||
